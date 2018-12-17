@@ -4,57 +4,64 @@
 #include <string.h>
 #include <time.h> 
 
-#define number 10 //количество кабинетов константа
-#define rec 24 //макс количество записей ко врачу на время приема(6 часов)
-#define doc 50 //макс возможное количество врачей, 10 кабинетов по 5 рабочих дней
+#define number 10 //РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°Р±РёРЅРµС‚РѕРІ
+#define rec 31 //РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїРёСЃРµР№ РІ РґРµРЅСЊ
+#define doc 50 //РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РІСЂР°С‡РµР№
 
-
-
-struct clinic //структура описания кабинета 1 день работы
+struct doctor //СЃС‚СЂСѓРєС‚СѓСЂР° РѕРїРёСЃР°РЅРёСЏ РІСЂР°С‡Р°
 {
-	int f;//если данные заполнены, то 1, в противном случае 0
-	int weekday;//день недели
-	char name[25];//фамилия врача
-	char doctor[25];//специализация врача
-	int start;//начало приема
-	int end;//конец приема (для простоты реализовано 6 часов приема)
-	int n;//количество записанных человек
-	//struct rec_time record;//структура записей на прием
+	char name[30];
+	char spec[30];
+	int id;
 };
 
-struct office //структура кабинета по дням недели
+struct clinic //СЃСЂСѓРєС‚СѓСЂР° РѕРїРёСЃР°РЅРёСЏ РєР°Р±РёРЅРµС‚Р° РЅР° 1 РґРµРЅСЊ СЂР°Р±РѕС‚С‹
 {
-	int number_room;//номер кабинета
-	struct clinic medic[5];/*описание кабинета, 5 рабочих дней,
-						   поэтому 5 описаний на каждый день*/
+	int f;
+	int weekday; //РґРµРЅСЊ РЅРµРґРµР»Рё
+	struct doctor medik; //РѕРїРёСЃР°РЅРёРµ РІСЂР°С‡Р°
+	int start;
+	int end;
+	int n; //РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїРёСЃРµР№ РЅР° РїСЂРёРµРј
+
 };
 
-int i;
-struct office spisok[number];
+struct office //СЃС‚СЂСѓРєС‚СѓСЂР° РѕРїРёСЃР°РЅРёСЏ СЂР°Р±РѕС‚С‹ РєР°Р±РёРЅРµС‚Р° Р·Р° РЅРµРґРµР»СЋ
+{
+	int number_room; //РЅРѕРјРµСЂ РєР°Р±РёРЅРµС‚Р°
+	struct clinic medic[5]; //РѕРїРёСЃР°РЅРёРµ СЂР°Р±РѕС‚С‹ РєР°Р±РёРЅРµС‚Р° РЅР° 5 РґРЅРµР№
+};
+
+int i, count_doc = 0; //СЃС‡РµС‚С‡РёРє Р·Р°РїРёСЃРµР№
+struct office spisok[number]; //РјР°СЃСЃРёРІ РєР°Р±РёРЅРµС‚РѕРІ
+struct doctor medic_sp[doc]; //РјР°СЃСЃРёРІ РІСЂР°С‡РµР№
 
 
-void add();
-void dell();
-void record_add(int, int, int);
-void modification(int, int);
-void out_ABC();
-void out_load();
-void output(struct clinic[], int);
-void out_doctor_ABC();
-void poisk_time_doctor();
-int random();
+void add(); //Р·Р°РїРѕР»РЅРµРЅРёРµ РґР°РЅРЅС‹С… РґР»СЏ РѕРґРЅРѕРіРѕ СЂР°Р±РѕС‡РµРіРѕ РґРЅСЏ РґР»СЏ РѕРґРЅРѕРіРѕ РєР°Р±РёРЅРµС‚Р°
+void dell(); //СѓРґР°Р»РµРЅРёРµ РґР°РЅРЅС‹С… РѕРґРЅРѕРіРѕ СЂР°Р±РѕС‡РµРіРѕ РґРЅСЏ РєР°Р±РёРЅРµС‚Р°
+void modification(int, int); //РІС‹Р±РѕСЂ РЅСѓР¶РЅРѕРіРѕ РІСЂР°С‡Р° РїРѕ РЅРѕРјРµСЂСѓ
+void out_ABC(); //СЃРѕСЂС‚РёСЂРѕРІРєР° Рё РІС‹РІРѕРґ С„Р°РјРёР»РёР№ РІСЂР°РµР№ РїРѕ Р°Р»С„Р°РІРёС‚Сѓ
+void out_load(); //РІС‹РІРѕРґ Р·Р°РіСЂСѓР·РєРё РєР°Р±РёРЅРµС‚Р° РїРѕ РґРЅСЏРј РЅРµРґРµР»Рё
+void out_doctor_ABC(); //РІС‹РІРѕРґ СЃРїРёСЃРєР° С„Р°РјРёР»РёР№ РІСЂР°С‡РµР№ РїРѕ Р°Р»С„Р°РІРёС‚Сѓ РїРѕ РІС‹Р±СЂР°РЅРЅРѕР№ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
+void poisk_time_doctor(); //РїРѕРёСЃРє РґРѕРєС‚РѕСЂР° РїРѕ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё Рё РІСЂРµРјРµРЅРё РїСЂРёРµРјР°
+void add_doctor(); //РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ РґРѕРєС‚РѕСЂР°
+void output(struct doctor); // РІС‹РІРѕРґ С„Р°РјРёР»РёРё, СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё Рё id РґРѕРєС‚РѕСЂР°
+int random(); // РґР»СЏ РІС‹РІРѕРґР° Р·Р°РіСЂСѓР¶РµРЅРЅРѕСЃС‚Рё РєР°Р±РёРЅРµС‚Р°
 
 
 int main()
 {
-	int j, a;
+	int j, a = 0;
 	FILE *file;
-
+	file = fopen("clinik.txt", "a");
+	fclose(file);
+	
 	file = fopen("clinik.txt", "r");
 	for (i = 0; i<number; i++)
 	{
 		spisok[i].number_room = i + 1;
 	}
+	fseek(file, 0L, SEEK_SET);
 	if (file != NULL)
 	{
 		for (i = 0; i<number; i++)
@@ -62,12 +69,13 @@ int main()
 			fscanf(file, "%i", &spisok[i].number_room);
 			for (j = 0; j<5; j++)
 			{
+				spisok[i].medic[j].weekday = j + 1;
 				fscanf(file, "%i", &spisok[i].medic[j].f);
 				if (spisok[i].medic[j].f == 1)
 				{
-					fscanf(file, "%s%s%i%i", &spisok[i].medic[j].name, &spisok[i].medic[j].doctor,
-						&spisok[i].medic[j].start, &spisok[i].medic[j].end);
-						fscanf(file, "%i", &spisok[i].medic[j].n);
+					fscanf(file, "%s%s%i%i%i", &spisok[i].medic[j].medik.name, &spisok[i].medic[j].medik.spec,
+						&spisok[i].medic[j].medik.id, &spisok[i].medic[j].start, &spisok[i].medic[j].end);
+					fscanf(file, "%i", &spisok[i].medic[j].n);
 
 				}
 			}
@@ -75,8 +83,28 @@ int main()
 	}
 	fclose(file);
 
-	do{
+	file = fopen("doctor.txt", "a");
+	fclose(file);
+	file = fopen("doctor.txt", "r");
+	if (file != NULL)
+		for (i = 0; i<doc; i++)
+		{
+			if (!feof(file))
+			{
+				fscanf(file, "%s%s%i", &medic_sp[i].name, &medic_sp[i].spec, &medic_sp[i].id);
+				count_doc++;
+				if (medic_sp[i].id == 0)
+					count_doc--;
+			}
+			else
+				break;
+		}
+	//printf("\n\n%i\n\n", count_doc);
+	fclose(file);
 
+	do{
+		if (count_doc == 0)
+			printf("Vvedite doctorov!!!\n\n");
 		printf("\n Viberite deistvie:\n\n\n");
 		printf("1. Vvod/Izmenenie zapisi\n\n");
 		printf("2. Udalenie zapisi\n\n");
@@ -84,7 +112,8 @@ int main()
 		printf("4. Vivod doctorov\n\n");
 		printf("5. Vivod spiska vrachey\n\n");
 		printf("6. Poisk vrachey po spezialnosti\n\n");
-		printf("7. Exit\n\n (1-7):");
+		printf("7.Vvod novogo doctora\n\n");
+		printf("8 Exit\n\n (1-8):");
 		scanf("%d", &a);
 
 		switch (a)
@@ -109,16 +138,27 @@ int main()
 			poisk_time_doctor();
 			break;
 		case 7: system("cls");
+			add_doctor();
+			break;
+		case 8: system("cls");
 			break;
 		default: printf("\n\nERROR!!! Please enter number 1-7...\n\n");
 		}
-	} while (a != 7);
+	} while (a != 8);
+
+	file = fopen("doctor.txt", "w");
+	if (file != NULL)
+	{
+		for (i = 0; i<count_doc; i++)
+		{
+			fprintf(file, "%s %s %i", medic_sp[i].name, medic_sp[i].spec, medic_sp[i].id);
+			if (i != count_doc - 1)
+				fprintf(file, "\n");
+		}
+	}
+	fclose(file);
 
 	file = fopen("clinik.txt", "w");
-	for (i = 0; i<number; i++)
-	{
-		spisok[i].number_room = i + 1;
-	}
 	if (file != NULL)
 	{
 		for (i = 0; i<number; i++)
@@ -129,8 +169,8 @@ int main()
 				fprintf(file, "%i ", spisok[i].medic[j].f);
 				if (spisok[i].medic[j].f == 1)
 				{
-					fprintf(file, "%s %s %i %i ", spisok[i].medic[j].name, spisok[i].medic[j].doctor,
-						spisok[i].medic[j].start, spisok[i].medic[j].end);
+					fprintf(file, "%s %s %i %i %i ", spisok[i].medic[j].medik.name, spisok[i].medic[j].medik.spec,
+						spisok[i].medic[j].medik.id, spisok[i].medic[j].start, spisok[i].medic[j].end);
 					fprintf(file, "%i ", spisok[i].medic[j].n);
 
 				}
@@ -153,13 +193,17 @@ void add()
 		printf("Vvedite nomer kabineta (1 - 10): ");
 		scanf("%i", &num);
 		num--;
-	} while (num >= number);
+		if (num >= number || num < 0)
+			printf("\n Vvedite nomer 1-10!!!\n\n");
+	} while (num >= number || num < 0);
 
 	do{
 		printf("Vvedite den' nedeli (1 - 5): ");
 		scanf("%i", &day);
 		day--;
-	} while (day >= 5);
+		if (day >= 5 || day < 0)
+			printf("\n Vvedite den' 1-5!!!\n\n");
+	} while (day >= 5 || day < 0);
 
 	if (spisok[num].medic[day].f == 1)
 	{
@@ -172,37 +216,85 @@ void add()
 		modification(num, day);
 }
 
+void add_doctor()
+{
+	int Id = count_doc;
+	int pr = 0;
+	system("cls");
+	printf("Vvedite imya: ");
+	scanf("%s", &medic_sp[count_doc].name);
+	printf("Vvedite special'nost': ");
+	scanf("%s", &medic_sp[count_doc].spec);
+	do{
+		int pr = 0;
+		for (i = 0; i < count_doc; i++)
+			if ((Id + 1) == medic_sp[i].id)
+			{
+				pr = 1;
+				Id += 1;
+				break;
+			}
+		if (pr == 0)
+			medic_sp[count_doc].id = (Id + 1);
+	} while (pr);
+	count_doc++;
+}
 
+void output(struct doctor medic_sp)
+{
+	{
+		printf("%s ", medic_sp.name);
+		printf("%s ", medic_sp.spec);
+		printf("%i\n", medic_sp.id);
+	}
+}
 
 int load_add()
 {
 	srand(time(NULL));
-	return rand() % 31;
+	return rand() % rec;
 }
 
 void modification(int num, int day)
 {
-	system("cls");
+	int n;
 	printf("Vvedite dannie\n\n");
-	printf("familia doctora: ");
-	scanf("%s", &spisok[num].medic[day].name);
-	printf("doctor: ");
-	scanf("%s", &spisok[num].medic[day].doctor);
+	for (i = 0; i < count_doc; i++)
+		output(medic_sp[i]);
+	printf("\n Vvedite nomer id: ");
+	scanf("%i", &n);
+	for (i = 0; i < count_doc; i++)
+		if (n == medic_sp[i].id)
+		{
+			spisok[num].medic[day].medik = medic_sp[i];
+			break;
+		}
 	printf("nachalo priema: ");
 	scanf("%i", &spisok[num].medic[day].start);
 	spisok[num].medic[day].end = spisok[num].medic[day].start + 6;
 	spisok[num].medic[day].f = 1;
 	spisok[num].medic[day].weekday = day + 1;
 	spisok[num].medic[day].n = load_add();
-
-
 }
 
 void dell()
 {
+	int j;
 	int num;
 	int day;
-
+	int pr = 0;
+	for (i = 0; i<number; i++)
+		for (j = 0; j<5; j++)
+			if (spisok[i].medic[j].f)
+			{
+				pr = 1;
+				break;
+			}
+	if (pr == 0)
+	{
+		printf("\n\nUdalyat' nechego!!!"); 
+		return; 
+	}
 	do{
 		printf("Vvedite nomer kabineta (1 - 10): ");
 		scanf("%i", &num);
@@ -220,6 +312,7 @@ void dell()
 
 void out_load()
 {
+	
 	int num;
 	printf("Zagruska kabineta\n\n");
 	do{
@@ -234,7 +327,7 @@ void out_load()
 		if (spisok[num].medic[i].f)
 		{
 			printf("\n kolichestvo zapusei - %i\n\n", spisok[num].medic[i].n);
-			
+
 		}
 		else
 		{
@@ -243,75 +336,61 @@ void out_load()
 	}
 }
 
-void output(struct clinic doctor[], int counter)
-{
-	for (i = 0; i<counter; i++)
-	{
-		if (strcmp(doctor[i].name, doctor[i + 1].name) != 0)
-			printf("%s, %s\n", doctor[i].name, doctor[i].doctor);
-	}
-}
 
 void out_ABC()
 {
 	int j, counter = 0;
-	struct clinic doctor[doc];
-	struct clinic temp;
+	struct doctor temp;
 
-	for (i = 0; i<number; i++)
-		for (j = 0; j<5; j++)
-			if (spisok[i].medic[j].f)
+	for (i = 0; i<count_doc - 1; i++)
+		for (j = i + 1; j<count_doc; j++)
+			if (strcmp(medic_sp[i].name, medic_sp[j].name) > 0)
 			{
-				doctor[counter] = spisok[i].medic[j];
-				counter++;
+				temp = medic_sp[i];
+				medic_sp[i] = medic_sp[j];
+				medic_sp[j] = temp;
 			}
-
-	for (i = 0; i<counter - 1; i++)
-		for (j = i + 1; j<counter; j++)
-			if (strcmp(doctor[i].name, doctor[j].name) > 0)
-			{
-				temp = doctor[i];
-				doctor[i] = doctor[j];
-				doctor[j] = temp;
-			}
-
-	output(doctor, counter);
+	for (i = 0; i<count_doc; i++)
+		output(medic_sp[i]);
 }
 
 void out_doctor_ABC()
 {
 	char doct[25];
 	int j, counter = 0;
-	struct clinic doctor[doc];
-	struct clinic temp;
+	struct doctor doctr[doc];
+	struct doctor temp;
 
 	printf("Vvedite doctora: ");
 	scanf("%s", &doct);
 
-	for (i = 0; i<number; i++)
-		for (j = 0; j<5; j++)
-			if (spisok[i].medic[j].f == 1)
-				if (strcmp(spisok[i].medic[j].doctor, doct) == 0)
+	for (i = 0; i<doc; i++)
+		if (strcmp(medic_sp[i].spec, doct) == 0)
+		{
+			doctr[counter] = medic_sp[i];
+			counter++;
+		}
+	if (counter != 0 && counter != 1)
+	{
+		for (i = 0; i < counter - 1; i++)
+			for (j = i + 1; j < counter; j++)
+				if (strcmp(doctr[i].name, doctr[j].name) > 0)
 				{
-					doctor[counter] = spisok[i].medic[j];
-					counter++;
+					temp = doctr[i];
+					doctr[i] = doctr[j];
+					doctr[j] = temp;
 				}
+	}
+	if (counter != 0)
+		for (i = 0; i < counter; i++)
+			output(doctr[i]);
 
-	for (i = 0; i<counter - 1; i++)
-		for (j = i + 1; j<counter; j++)
-			if (strcmp(doctor[i].name, doctor[j].name) > 0)
-			{
-				temp = doctor[i];
-				doctor[i] = doctor[j];
-				doctor[j] = temp;
-			}
 
-	output(doctor, counter);
 }
 
 void poisk_time_doctor()
 {
-	char doct[25];
+	char doct[30];
 	int time;
 	int day, j;
 
@@ -324,12 +403,12 @@ void poisk_time_doctor()
 	for (i = 0; i<number; i++)
 		for (j = 0; j<5; j++)
 			if (spisok[i].medic[j].f == 1)
-				if ((strcmp(spisok[i].medic[j].doctor, doct) == 0) &&
+				if ((strcmp(spisok[i].medic[j].medik.spec, doct) == 0) &&
 					spisok[i].medic[j].weekday == day &&
 					spisok[i].medic[j].start <= time &&
 					spisok[i].medic[j].end > time)
 				{
-					printf("%s %s, %i:00 - %i:00", spisok[i].medic[j].doctor, spisok[i].medic[j].name,
+					printf("%s %s, %i:00 - %i:00", spisok[i].medic[j].medik.name, spisok[i].medic[j].medik.spec,
 						spisok[i].medic[j].start, spisok[i].medic[j].end);
 				}
 }
